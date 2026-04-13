@@ -1,6 +1,7 @@
-#include <stdint.h>
 #include "framebuffer.h"
 #include "mailbox.h"
+#include "font.h"
+#include <stdint.h>
 
 static uint32_t width;
 static uint32_t height;
@@ -13,15 +14,15 @@ int framebuffer_init(void) {
     mailbox[0] = 35 * 4;
     mailbox[1] = 0;
 
-    mailbox[2] = 0x00048003;
-    mailbox[3] = 8;
-    mailbox[4] = 8;
-    mailbox[5] = 1024;
-    mailbox[6] = 768;
+    mailbox[2]  = 0x00048003;
+    mailbox[3]  = 8;
+    mailbox[4]  = 8;
+    mailbox[5]  = 1024;
+    mailbox[6]  = 768;
 
-    mailbox[7] = 0x00048004;
-    mailbox[8] = 8;
-    mailbox[9] = 8;
+    mailbox[7]  = 0x00048004;
+    mailbox[8]  = 8;
+    mailbox[9]  = 8;
     mailbox[10] = 1024;
     mailbox[11] = 768;
 
@@ -66,14 +67,46 @@ int framebuffer_init(void) {
 }
 
 void draw_pixel(int x, int y, uint32_t color) {
+    if (!framebuffer) return;
+    if (x < 0 || y < 0) return;
+    if ((uint32_t)x >= width || (uint32_t)y >= height) return;
+
     uint32_t *pixel = (uint32_t*)(framebuffer + y * pitch + x * 4);
     *pixel = color;
 }
 
-void draw_rect(int x, int y, int width, int height, uint32_t color) {
-    for (int row = y; row < y + height; row++) {
-        for (int col = x; col < x + width; col++) {
+void draw_rect(int x, int y, int rect_width, int rect_height, uint32_t color) {
+    for (int row = y; row < y + rect_height; row++) {
+        for (int col = x; col < x + rect_width; col++) {
             draw_pixel(col, row, color);
         }
+    }
+}
+
+void draw_char(int x, int y, char c, uint32_t color) {
+    const uint8_t *glyph = font[(unsigned char)c];
+
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            if (glyph[row] & (1 << (7 - col))) {
+                draw_pixel(x + col, y + row, color);
+            }
+        }
+    }
+}
+
+void draw_string(int x, int y, const char *str, uint32_t color) {
+    int cursor_x = x;
+    int cursor_y = y;
+
+    while (*str) {
+        if (*str == '\n') {
+            cursor_x = x;
+            cursor_y += 10;
+        } else {
+            draw_char(cursor_x, cursor_y, *str, color);
+            cursor_x += 8;
+        }
+        str++;
     }
 }
