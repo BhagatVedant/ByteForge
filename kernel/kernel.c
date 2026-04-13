@@ -1,6 +1,11 @@
 #include "framebuffer.h"
 #include "terminal.h"
 
+static void delay(volatile unsigned int count) {
+    while (count--) {
+    }
+}
+
 void kernel_main(void) {
     if (framebuffer_init()) {
         terminal_init();
@@ -16,9 +21,13 @@ void kernel_main(void) {
 
         terminal_set_color(0x00FFFFFF);
         terminal_write("ByteForge > ");
-        terminal_draw_cursor();
     }
 
     while (1) {
+        terminal_draw_cursor();
+        delay(5000000);
+
+        terminal_erase_cursor();
+        delay(5000000);
     }
 }

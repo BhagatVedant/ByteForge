@@ -64,3 +64,7 @@ void terminal_write(const char *str) {
 void terminal_draw_cursor(void) {
     draw_char(cursor_x, cursor_y, '_', terminal_color);
 }
+
+void terminal_erase_cursor(void) {
+    draw_char(cursor_x, cursor_y, ' ', BG_COLOR);
+}

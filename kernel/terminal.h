@@ -9,5 +9,6 @@ void terminal_set_color(uint32_t color);
 void terminal_write_char(char c);
 void terminal_write(const char *str);
 void terminal_draw_cursor(void);
+void terminal_erase_cursor(void);
 
 #endif
