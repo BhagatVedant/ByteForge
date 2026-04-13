@@ -1,10 +1,22 @@
 #include "framebuffer.h"
+#include "terminal.h"
 
 void kernel_main(void) {
     if (framebuffer_init()) {
-        draw_string(40, 40, "ByteForge OS v0.1", 0x00FFCC00);
-        draw_string(40, 60, "Boot successful.", 0x00FFFFFF);
-        draw_string(40, 80, "Raspberry Pi Zero W", 0x00AAAAFF);
+        terminal_init();
+
+        terminal_set_color(0x00FFCC00);
+        terminal_write("ByteForge OS v0.1\n");
+
+        terminal_set_color(0x00FFFFFF);
+        terminal_write("Framebuffer initialized: OK\n");
+
+        terminal_set_color(0x00AAFFAA);
+        terminal_write("System ready.\n\n");
+
+        terminal_set_color(0x00FFFFFF);
+        terminal_write("ByteForge > ");
+        terminal_draw_cursor();
     }
 
     while (1) {

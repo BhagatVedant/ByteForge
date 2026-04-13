@@ -7,7 +7,8 @@ BUILD_DIR = build
 OBJ = $(BUILD_DIR)/boot.o \
       $(BUILD_DIR)/kernel.o \
       $(BUILD_DIR)/mailbox.o \
-      $(BUILD_DIR)/framebuffer.o
+      $(BUILD_DIR)/framebuffer.o \
+      $(BUILD_DIR)/terminal.o
 
 ELF = $(BUILD_DIR)/kernel.elf
 IMG = $(BUILD_DIR)/kernel.img
@@ -20,13 +21,16 @@ $(BUILD_DIR):
 $(BUILD_DIR)/boot.o: boot/boot.S | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/kernel.o: kernel/kernel.c kernel/framebuffer.h | $(BUILD_DIR)
+$(BUILD_DIR)/kernel.o: kernel/kernel.c kernel/framebuffer.h kernel/terminal.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/mailbox.o: kernel/mailbox.c kernel/mailbox.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/framebuffer.o: kernel/framebuffer.c kernel/framebuffer.h kernel/mailbox.h kernel/font.h | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/terminal.o: kernel/terminal.c kernel/terminal.h kernel/framebuffer.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(ELF): $(OBJ)
