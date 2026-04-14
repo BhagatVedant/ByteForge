@@ -27,8 +27,8 @@ void kernel_main(void) {
         input_init();
 
         simulate_typing("help");
-        simulate_typing("version");
-        simulate_typing("echo ByteForge is alive");
+        simulate_typing("credits");
+        simulate_typing("echo ByteForge is getting stronger");
         simulate_typing("klippy");
         simulate_typing("info");
     }

@@ -1,6 +1,5 @@
 # Build output
 build/
-build/*.img
 
 # Object files
 *.o
