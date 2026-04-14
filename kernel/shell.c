@@ -42,8 +42,6 @@ void shell_prompt(void) {
 
 void shell_execute(const char *command) {
     terminal_erase_cursor();
-    terminal_write(command);
-    terminal_write("\n");
 
     if (strings_equal(command, "help")) {
         terminal_set_color(0x00FFFFFF);

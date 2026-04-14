@@ -23,6 +23,10 @@ static void terminal_newline(void) {
     }
 }
 
+static void clear_char_cell(int x, int y) {
+    draw_rect(x, y, CHAR_WIDTH, CHAR_HEIGHT, BG_COLOR);
+}
+
 void terminal_init(void) {
     cursor_x = TERM_START_X;
     cursor_y = TERM_START_Y;
@@ -66,12 +70,12 @@ void terminal_draw_cursor(void) {
 }
 
 void terminal_erase_cursor(void) {
-    draw_char(cursor_x, cursor_y, ' ', BG_COLOR);
+    clear_char_cell(cursor_x, cursor_y);
 }
 
 void terminal_backspace(void) {
     if (cursor_x > TERM_START_X) {
         cursor_x -= CHAR_WIDTH;
-        draw_char(cursor_x, cursor_y, ' ', BG_COLOR);
+        clear_char_cell(cursor_x, cursor_y);
     }
 }

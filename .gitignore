@@ -1,0 +1,25 @@
+# Build output
+build/
+
+# Object files
+*.o
+
+# ELF files
+*.elf
+
+# Generated kernel image
+kernel.img
+
+# VSCode
+.vscode/
+
+# Temp files
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS junk
+.DS_Store
+Thumbs.db
