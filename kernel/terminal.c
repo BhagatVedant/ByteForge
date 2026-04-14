@@ -68,3 +68,10 @@ void terminal_draw_cursor(void) {
 void terminal_erase_cursor(void) {
     draw_char(cursor_x, cursor_y, ' ', BG_COLOR);
 }
+
+void terminal_backspace(void) {
+    if (cursor_x > TERM_START_X) {
+        cursor_x -= CHAR_WIDTH;
+        draw_char(cursor_x, cursor_y, ' ', BG_COLOR);
+    }
+}
