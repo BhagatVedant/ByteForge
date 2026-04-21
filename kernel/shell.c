@@ -40,6 +40,8 @@ static void cmd_mount(const char *args);
 static void cmd_ls(const char *args);
 static void cmd_open(const char *args);
 static void cmd_status(const char *args);
+static void cmd_cat(const char *args);
+static void cmd_unmount(const char *args);
 
 static shell_command_t commands[] = {
     {"help",    cmd_help,    "show available commands"},
@@ -55,6 +57,8 @@ static shell_command_t commands[] = {
     {"echo",    cmd_echo,    "print text"},
     {"klippy",  cmd_klippy,  "???"},
     {"credits", cmd_credits, "show credits"},
+    {"cat",     cmd_cat,     "print a file in terminal"},
+    {"unmount", cmd_unmount, "unmount current device"},
 };
 
 static const int command_count = sizeof(commands) / sizeof(commands[0]);
@@ -166,6 +170,15 @@ static void cmd_credits(const char *args) {
     terminal_set_color(0x00FFFFFF);
     terminal_write("ByteForge by Vedant Bhagat\n");
     terminal_write("Built on Raspberry Pi Zero W\n");
+}
+
+static void cmd_cat(const char *args) {
+    storage_cat_file(args);
+}
+
+static void cmd_unmount(const char *args) {
+    (void)args;
+    storage_unmount();
 }
 
 void shell_execute(const char *command) {

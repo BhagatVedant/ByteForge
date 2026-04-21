@@ -16,6 +16,14 @@ void kernel_main(void) {
         storage_init();
         shell_prompt();
 
+        keyboard_push_char('s');
+        keyboard_push_char('t');
+        keyboard_push_char('a');
+        keyboard_push_char('t');
+        keyboard_push_char('u');
+        keyboard_push_char('s');
+        keyboard_push_char('\n');
+
         keyboard_push_char('d');
         keyboard_push_char('e');
         keyboard_push_char('v');
@@ -71,6 +79,67 @@ void kernel_main(void) {
         keyboard_push_char('t');
         keyboard_push_char('x');
         keyboard_push_char('t');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('o');
+        keyboard_push_char('p');
+        keyboard_push_char('e');
+        keyboard_push_char('n');
+        keyboard_push_char(' ');
+        keyboard_push_char('r');
+        keyboard_push_char('e');
+        keyboard_push_char('s');
+        keyboard_push_char('u');
+        keyboard_push_char('m');
+        keyboard_push_char('e');
+        keyboard_push_char('.');
+        keyboard_push_char('t');
+        keyboard_push_char('x');
+        keyboard_push_char('t');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('c');
+        keyboard_push_char('a');
+        keyboard_push_char('t');
+        keyboard_push_char(' ');
+        keyboard_push_char('r');
+        keyboard_push_char('e');
+        keyboard_push_char('s');
+        keyboard_push_char('u');
+        keyboard_push_char('m');
+        keyboard_push_char('e');
+        keyboard_push_char('.');
+        keyboard_push_char('t');
+        keyboard_push_char('x');
+        keyboard_push_char('t');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('o');
+        keyboard_push_char('p');
+        keyboard_push_char('e');
+        keyboard_push_char('n');
+        keyboard_push_char(' ');
+        keyboard_push_char('f');
+        keyboard_push_char('a');
+        keyboard_push_char('k');
+        keyboard_push_char('e');
+        keyboard_push_char('.');
+        keyboard_push_char('t');
+        keyboard_push_char('x');
+        keyboard_push_char('t');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('u');
+        keyboard_push_char('n');
+        keyboard_push_char('m');
+        keyboard_push_char('o');
+        keyboard_push_char('u');
+        keyboard_push_char('n');
+        keyboard_push_char('t');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('l');
+        keyboard_push_char('s');
         keyboard_push_char('\n');
     }
 

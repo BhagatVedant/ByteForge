@@ -2,17 +2,24 @@
 #include "terminal.h"
 #include "hello_file.h"
 #include "notes_file.h"
+#include "resume_file.h"
 
 static int storage_mounted = 0;
 
-static const char *device_name = "usb0";
+typedef struct {
+    const char *name;
+    const unsigned char *data;
+    unsigned int length;
+    const char *type;
+} file_entry_t;
 
-static const char *files[] = {
-    "hello.txt",
-    "notes.txt"
+static file_entry_t files[] = {
+    {"hello.txt",  hello_txt,  sizeof(hello_txt),  "text"},
+    {"notes.txt",  notes_txt,  sizeof(notes_txt),  "text"},
+    {"resume.txt", resume_txt, sizeof(resume_txt), "text"},
 };
 
-static const int file_count = 2;
+static const int file_count = sizeof(files) / sizeof(files[0]);
 
 static int strings_equal(const char *a, const char *b) {
     while (*a && *b) {
@@ -36,17 +43,36 @@ void storage_devices(void) {
 }
 
 void storage_mount(const char *device) {
-    if (strings_equal(device, device_name)) {
-        storage_mounted = 1;
-        terminal_set_color(0x00AAFFAA);
-        terminal_write("Mounted usb0 successfully.\n");
-    } else {
+    if (!strings_equal(device, "usb0")) {
         terminal_set_color(0x00FF6666);
         terminal_write("Device not found: ");
         terminal_set_color(0x00FFFFFF);
         terminal_write(device);
         terminal_write("\n");
+        return;
     }
+
+    if (storage_mounted) {
+        terminal_set_color(0x00FFCC00);
+        terminal_write("usb0 is already mounted.\n");
+        return;
+    }
+
+    storage_mounted = 1;
+    terminal_set_color(0x00AAFFAA);
+    terminal_write("Mounted usb0 successfully.\n");
+}
+
+void storage_unmount(void) {
+    if (!storage_mounted) {
+        terminal_set_color(0x00FF6666);
+        terminal_write("No storage mounted.\n");
+        return;
+    }
+
+    storage_mounted = 0;
+    terminal_set_color(0x00AAFFAA);
+    terminal_write("Unmounted usb0 successfully.\n");
 }
 
 void storage_list_files(void) {
@@ -60,7 +86,9 @@ void storage_list_files(void) {
     terminal_write("Files:\n");
 
     for (int i = 0; i < file_count; i++) {
-        terminal_write(files[i]);
+        terminal_write(files[i].name);
+        terminal_write("  ");
+        terminal_write(files[i].type);
         terminal_write("\n");
     }
 }
@@ -72,37 +100,51 @@ void storage_open_file(const char *name) {
         return;
     }
 
+    for (int i = 0; i < file_count; i++) {
+        if (strings_equal(name, files[i].name)) {
+            terminal_set_color(0x00FFFFFF);
+            terminal_write("Opening ");
+            terminal_write(files[i].name);
+            terminal_write("...\n");
+
+            for (unsigned int j = 0; j < files[i].length; j++) {
+                terminal_write_char((char)files[i].data[j]);
+            }
+            terminal_write("\n");
+            return;
+        }
+    }
+
+    terminal_set_color(0x00FF6666);
+    terminal_write("File not found: ");
     terminal_set_color(0x00FFFFFF);
+    terminal_write(name);
+    terminal_write("\n");
+}
 
-    if (strings_equal(name, "hello.txt")) {
-        terminal_write("Opening hello.txt...\n");
-
-        for (unsigned int i = 0; i < hello_txt_len; i++) {
-            terminal_write_char((char)hello_txt[i]);
-        }
-
-        if (hello_txt_len == 0 || hello_txt[hello_txt_len - 1] != '\n') {
-            terminal_write("\n");
-        }
-    }
-    else if (strings_equal(name, "notes.txt")) {
-        terminal_write("Opening notes.txt...\n");
-
-        for (unsigned int i = 0; i < notes_txt_len; i++) {
-            terminal_write_char((char)notes_txt[i]);
-        }
-
-        if (notes_txt_len == 0 || notes_txt[notes_txt_len - 1] != '\n') {
-            terminal_write("\n");
-        }
-    }
-    else {
+void storage_cat_file(const char *name) {
+    if (!storage_mounted) {
         terminal_set_color(0x00FF6666);
-        terminal_write("File not found: ");
-        terminal_set_color(0x00FFFFFF);
-        terminal_write(name);
-        terminal_write("\n");
+        terminal_write("No storage mounted.\n");
+        return;
     }
+
+    for (int i = 0; i < file_count; i++) {
+        if (strings_equal(name, files[i].name)) {
+            terminal_set_color(0x00FFFFFF);
+            for (unsigned int j = 0; j < files[i].length; j++) {
+                terminal_write_char((char)files[i].data[j]);
+            }
+            terminal_write("\n");
+            return;
+        }
+    }
+
+    terminal_set_color(0x00FF6666);
+    terminal_write("File not found: ");
+    terminal_set_color(0x00FFFFFF);
+    terminal_write(name);
+    terminal_write("\n");
 }
 
 void storage_status(void) {
@@ -116,4 +158,7 @@ void storage_status(void) {
         terminal_set_color(0x00FF6666);
         terminal_write("Mounted device: none\n");
     }
+
+    terminal_set_color(0x00FFFFFF);
+    terminal_write("Available files: 3\n");
 }

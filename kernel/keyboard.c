@@ -1,7 +1,7 @@
 #include "keyboard.h"
 #include "input.h"
 
-#define KEYBOARD_QUEUE_SIZE 64
+#define KEYBOARD_QUEUE_SIZE 512
 
 static char keyboard_queue[KEYBOARD_QUEUE_SIZE];
 static int queue_head = 0;
