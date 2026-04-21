@@ -50,3 +50,15 @@ void input_submit(void) {
     input_length = 0;
     input_buffer[0] = '\0';
 }
+
+void input_process_char(char c) {
+    if (c == '\n' || c == '\r') {
+        input_submit();
+    }
+    else if (c == '\b') {
+        input_backspace();
+    }
+    else {
+        input_add_char(c);
+    }
+}

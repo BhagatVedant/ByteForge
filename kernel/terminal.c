@@ -5,6 +5,9 @@ static int cursor_x = 0;
 static int cursor_y = 0;
 static uint32_t terminal_color = 0x00FFFFFF;
 
+static int cursor_enabled = 0;
+static int cursor_visible = 0;
+
 #define TERM_START_X  40
 #define TERM_START_Y  40
 #define CHAR_WIDTH    8
@@ -31,6 +34,8 @@ void terminal_init(void) {
     cursor_x = TERM_START_X;
     cursor_y = TERM_START_Y;
     terminal_color = 0x00FFFFFF;
+    cursor_enabled = 0;
+    cursor_visible = 0;
     terminal_clear(BG_COLOR);
 }
 
@@ -38,6 +43,7 @@ void terminal_clear(uint32_t color) {
     draw_rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, color);
     cursor_x = TERM_START_X;
     cursor_y = TERM_START_Y;
+    cursor_visible = 0;
 }
 
 void terminal_set_color(uint32_t color) {
@@ -45,6 +51,10 @@ void terminal_set_color(uint32_t color) {
 }
 
 void terminal_write_char(char c) {
+    if (cursor_visible) {
+        terminal_erase_cursor();
+    }
+
     if (c == '\n') {
         terminal_newline();
         return;
@@ -66,16 +76,53 @@ void terminal_write(const char *str) {
 }
 
 void terminal_draw_cursor(void) {
+    if (!cursor_enabled || cursor_visible) {
+        return;
+    }
+
     draw_char(cursor_x, cursor_y, '_', terminal_color);
+    cursor_visible = 1;
 }
 
 void terminal_erase_cursor(void) {
+    if (!cursor_visible) {
+        return;
+    }
+
     clear_char_cell(cursor_x, cursor_y);
+    cursor_visible = 0;
 }
 
 void terminal_backspace(void) {
+    if (cursor_visible) {
+        terminal_erase_cursor();
+    }
+
     if (cursor_x > TERM_START_X) {
         cursor_x -= CHAR_WIDTH;
         clear_char_cell(cursor_x, cursor_y);
+    }
+}
+
+void terminal_enable_cursor(void) {
+    cursor_enabled = 1;
+    cursor_visible = 0;
+    terminal_draw_cursor();
+}
+
+void terminal_disable_cursor(void) {
+    terminal_erase_cursor();
+    cursor_enabled = 0;
+}
+
+void terminal_toggle_cursor(void) {
+    if (!cursor_enabled) {
+        return;
+    }
+
+    if (cursor_visible) {
+        terminal_erase_cursor();
+    } else {
+        terminal_draw_cursor();
     }
 }

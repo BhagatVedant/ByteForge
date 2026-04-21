@@ -12,4 +12,8 @@ void terminal_draw_cursor(void);
 void terminal_erase_cursor(void);
 void terminal_backspace(void);
 
+void terminal_enable_cursor(void);
+void terminal_disable_cursor(void);
+void terminal_toggle_cursor(void);
+
 #endif

@@ -2,41 +2,69 @@
 #include "terminal.h"
 #include "shell.h"
 #include "input.h"
-
-static void delay(volatile unsigned int count) {
-    while (count--) {
-    }
-}
-
-static void simulate_typing(const char *text) {
-    while (*text) {
-        input_add_char(*text);
-        delay(1200000);
-        text++;
-    }
-    delay(2000000);
-    input_submit();
-    delay(4000000);
-}
+#include "keyboard.h"
+#include "storage.h"
 
 void kernel_main(void) {
+    volatile unsigned int blink_counter = 0;
+
     if (framebuffer_init()) {
         terminal_init();
         shell_init();
-        shell_prompt();
         input_init();
+        keyboard_init();
+        storage_init();
+        shell_prompt();
 
-        simulate_typing("help");
-        simulate_typing("credits");
-        simulate_typing("echo ByteForge is getting stronger");
-        simulate_typing("klippy");
-        simulate_typing("info");
+        keyboard_push_char('d');
+        keyboard_push_char('e');
+        keyboard_push_char('v');
+        keyboard_push_char('i');
+        keyboard_push_char('c');
+        keyboard_push_char('e');
+        keyboard_push_char('s');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('m');
+        keyboard_push_char('o');
+        keyboard_push_char('u');
+        keyboard_push_char('n');
+        keyboard_push_char('t');
+        keyboard_push_char(' ');
+        keyboard_push_char('u');
+        keyboard_push_char('s');
+        keyboard_push_char('b');
+        keyboard_push_char('0');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('l');
+        keyboard_push_char('s');
+        keyboard_push_char('\n');
+
+        keyboard_push_char('o');
+        keyboard_push_char('p');
+        keyboard_push_char('e');
+        keyboard_push_char('n');
+        keyboard_push_char(' ');
+        keyboard_push_char('h');
+        keyboard_push_char('e');
+        keyboard_push_char('l');
+        keyboard_push_char('l');
+        keyboard_push_char('o');
+        keyboard_push_char('.');
+        keyboard_push_char('t');
+        keyboard_push_char('x');
+        keyboard_push_char('t');
+        keyboard_push_char('\n');
     }
 
     while (1) {
-        terminal_draw_cursor();
-        delay(2500000);
-        terminal_erase_cursor();
-        delay(2500000);
+        keyboard_poll();
+
+        blink_counter++;
+        if (blink_counter >= 50000) {
+            terminal_toggle_cursor();
+            blink_counter = 0;
+        }
     }
 }

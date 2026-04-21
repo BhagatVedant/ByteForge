@@ -5,5 +5,6 @@ void input_init(void);
 void input_add_char(char c);
 void input_backspace(void);
 void input_submit(void);
+void input_process_char(char c);
 
 #endif

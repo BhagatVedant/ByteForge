@@ -1,5 +1,6 @@
 #include "shell.h"
 #include "terminal.h"
+#include "storage.h"
 
 typedef void (*command_handler_t)(const char *args);
 
@@ -34,11 +35,21 @@ static void cmd_version(const char *args);
 static void cmd_echo(const char *args);
 static void cmd_klippy(const char *args);
 static void cmd_credits(const char *args);
+static void cmd_devices(const char *args);
+static void cmd_mount(const char *args);
+static void cmd_ls(const char *args);
+static void cmd_open(const char *args);
+static void cmd_status(const char *args);
 
 static shell_command_t commands[] = {
     {"help",    cmd_help,    "show available commands"},
     {"about",   cmd_about,   "about ByteForge"},
     {"info",    cmd_info,    "show system info"},
+    {"status",  cmd_status,  "show storage status"},
+    {"devices", cmd_devices, "list storage devices"},
+    {"mount",   cmd_mount,   "mount a device"},
+    {"ls",      cmd_ls,      "list files"},
+    {"open",    cmd_open,    "open a file"},
     {"clear",   cmd_clear,   "clear the screen"},
     {"version", cmd_version, "show OS version"},
     {"echo",    cmd_echo,    "print text"},
@@ -50,19 +61,20 @@ static const int command_count = sizeof(commands) / sizeof(commands[0]);
 
 void shell_init(void) {
     terminal_set_color(0x00FFCC00);
-    terminal_write("ByteForge OS v0.1\n");
+    terminal_write("ByteForge Storage OS v0.1\n");
 
     terminal_set_color(0x00FFFFFF);
     terminal_write("Framebuffer initialized: OK\n");
 
     terminal_set_color(0x00AAFFAA);
-    terminal_write("System ready.\n\n");
+    terminal_write("Storage service initialized: OK\n");
+    terminal_write("Server ready.\n\n");
 }
 
 void shell_prompt(void) {
     terminal_set_color(0x00FFFFFF);
-    terminal_write("ByteForge > ");
-    terminal_draw_cursor();
+    terminal_write("storage@byteforge > ");
+    terminal_enable_cursor();
 }
 
 static void cmd_help(const char *args) {
@@ -73,17 +85,13 @@ static void cmd_help(const char *args) {
     for (int i = 0; i < command_count; i++) {
         terminal_write(commands[i].name);
 
-        if (commands[i].name[0] == 'e') {
+        if (strings_equal(commands[i].name, "echo") ||
+            strings_equal(commands[i].name, "mount") ||
+            strings_equal(commands[i].name, "open")) {
             terminal_write(" ...");
         }
 
-        if (commands[i].name[0] == 'h') terminal_write("    ");
-        else if (commands[i].name[0] == 'i') terminal_write("    ");
-        else if (commands[i].name[0] == 'c') terminal_write("   ");
-        else if (commands[i].name[0] == 'k') terminal_write("  ");
-        else terminal_write(" ");
-
-        terminal_write("- ");
+        terminal_write(" - ");
         terminal_write(commands[i].description);
         terminal_write("\n");
     }
@@ -92,8 +100,8 @@ static void cmd_help(const char *args) {
 static void cmd_about(const char *args) {
     (void)args;
     terminal_set_color(0x00FFFFFF);
-    terminal_write("ByteForge is a bare-metal OS project for Raspberry Pi Zero W.\n");
-    terminal_write("Built from scratch in ARM assembly and C.\n");
+    terminal_write("ByteForge is a bare-metal storage-oriented OS project\n");
+    terminal_write("for Raspberry Pi Zero W, written in ARM assembly and C.\n");
 }
 
 static void cmd_info(const char *args) {
@@ -101,7 +109,31 @@ static void cmd_info(const char *args) {
     terminal_set_color(0x00FFFFFF);
     terminal_write("System: Raspberry Pi Zero W\n");
     terminal_write("Display: Framebuffer active\n");
-    terminal_write("Status: Running custom kernel\n");
+    terminal_write("Shell: Online\n");
+    terminal_write("Storage mode: Prototype\n");
+}
+
+static void cmd_status(const char *args) {
+    (void)args;
+    storage_status();
+}
+
+static void cmd_devices(const char *args) {
+    (void)args;
+    storage_devices();
+}
+
+static void cmd_mount(const char *args) {
+    storage_mount(args);
+}
+
+static void cmd_ls(const char *args) {
+    (void)args;
+    storage_list_files();
+}
+
+static void cmd_open(const char *args) {
+    storage_open_file(args);
 }
 
 static void cmd_clear(const char *args) {
@@ -112,7 +144,7 @@ static void cmd_clear(const char *args) {
 static void cmd_version(const char *args) {
     (void)args;
     terminal_set_color(0x00FFCC00);
-    terminal_write("ByteForge OS v0.1\n");
+    terminal_write("ByteForge Storage OS v0.1\n");
 }
 
 static void cmd_echo(const char *args) {
@@ -126,7 +158,7 @@ static void cmd_klippy(const char *args) {
     terminal_set_color(0x00FF66CC);
     terminal_write("Klippy? That guy?\n");
     terminal_set_color(0x00FFFFFF);
-    terminal_write("Yes, that's the one. That's him. The CS Goat.\n");
+    terminal_write("Yea bro. The one building a storage OS on a Pi for fun.\n");
 }
 
 static void cmd_credits(const char *args) {
@@ -137,7 +169,7 @@ static void cmd_credits(const char *args) {
 }
 
 void shell_execute(const char *command) {
-    terminal_erase_cursor();
+    terminal_disable_cursor();
 
     const char *args = command;
     while (*args && *args != ' ') {
