@@ -56,6 +56,22 @@ void kernel_main(void) {
         keyboard_push_char('x');
         keyboard_push_char('t');
         keyboard_push_char('\n');
+
+        keyboard_push_char('o');
+        keyboard_push_char('p');
+        keyboard_push_char('e');
+        keyboard_push_char('n');
+        keyboard_push_char(' ');
+        keyboard_push_char('n');
+        keyboard_push_char('o');
+        keyboard_push_char('t');
+        keyboard_push_char('e');
+        keyboard_push_char('s');
+        keyboard_push_char('.');
+        keyboard_push_char('t');
+        keyboard_push_char('x');
+        keyboard_push_char('t');
+        keyboard_push_char('\n');
     }
 
     while (1) {

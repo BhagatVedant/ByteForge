@@ -46,7 +46,7 @@ $(BUILD_DIR)/input.o: kernel/input.c kernel/input.h kernel/terminal.h kernel/she
 $(BUILD_DIR)/keyboard.o: kernel/keyboard.c kernel/keyboard.h kernel/input.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/storage.o: kernel/storage.c kernel/storage.h kernel/terminal.h | $(BUILD_DIR)
+$(BUILD_DIR)/storage.o: kernel/storage.c kernel/storage.h kernel/terminal.h kernel/hello_file.h kernel/notes_file.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(ELF): $(OBJ)

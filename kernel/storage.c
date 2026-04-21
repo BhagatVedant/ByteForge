@@ -1,11 +1,18 @@
 #include "storage.h"
 #include "terminal.h"
+#include "hello_file.h"
+#include "notes_file.h"
 
 static int storage_mounted = 0;
 
 static const char *device_name = "usb0";
-static const char *file_name = "hello.txt";
-static const char *file_contents = "hello from my phone";
+
+static const char *files[] = {
+    "hello.txt",
+    "notes.txt"
+};
+
+static const int file_count = 2;
 
 static int strings_equal(const char *a, const char *b) {
     while (*a && *b) {
@@ -51,7 +58,11 @@ void storage_list_files(void) {
 
     terminal_set_color(0x00FFFFFF);
     terminal_write("Files:\n");
-    terminal_write("hello.txt\n");
+
+    for (int i = 0; i < file_count; i++) {
+        terminal_write(files[i]);
+        terminal_write("\n");
+    }
 }
 
 void storage_open_file(const char *name) {
@@ -61,12 +72,31 @@ void storage_open_file(const char *name) {
         return;
     }
 
-    if (strings_equal(name, file_name)) {
-        terminal_set_color(0x00FFFFFF);
+    terminal_set_color(0x00FFFFFF);
+
+    if (strings_equal(name, "hello.txt")) {
         terminal_write("Opening hello.txt...\n");
-        terminal_write(file_contents);
-        terminal_write("\n");
-    } else {
+
+        for (unsigned int i = 0; i < hello_txt_len; i++) {
+            terminal_write_char((char)hello_txt[i]);
+        }
+
+        if (hello_txt_len == 0 || hello_txt[hello_txt_len - 1] != '\n') {
+            terminal_write("\n");
+        }
+    }
+    else if (strings_equal(name, "notes.txt")) {
+        terminal_write("Opening notes.txt...\n");
+
+        for (unsigned int i = 0; i < notes_txt_len; i++) {
+            terminal_write_char((char)notes_txt[i]);
+        }
+
+        if (notes_txt_len == 0 || notes_txt[notes_txt_len - 1] != '\n') {
+            terminal_write("\n");
+        }
+    }
+    else {
         terminal_set_color(0x00FF6666);
         terminal_write("File not found: ");
         terminal_set_color(0x00FFFFFF);
