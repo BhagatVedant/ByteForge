@@ -1,102 +1,77 @@
-# ByteForge
+# ByteForge OS
 
-ByteForge is a custom bare-metal operating system project for the Raspberry Pi Zero, written from scratch in ARM assembly and C.
+ByteForge is a bare-metal operating system I built from scratch for the Raspberry Pi Zero.
 
-The goal of ByteForge is to explore low-level operating system development by building directly on hardware without relying on a traditional OS kernel. The long-term vision is to turn the Raspberry Pi into a lightweight personal file hub with a minimal command-based interface.
+The main idea behind it is to turn the Pi into a simple personal storage OS, kind of like a very early version of a DIY Google Drive.
 
-## Current Progress
+Right now it is still a prototype, but the core parts are already working.
 
-At the moment, ByteForge includes:
+## What it currently does
 
-- ARM boot entry code
-- C kernel entry point
-- custom linker script
-- mailbox communication with the Raspberry Pi GPU
-- framebuffer initialization
-- basic pixel and rectangle drawing
-- Makefile-based build system that generates a bootable `kernel.img`
+- Boots directly on the Raspberry Pi with no Linux underneath
+- Sets up a framebuffer and displays text on screen
+- Has a custom terminal and shell
+- Has a basic storage system with commands like:
+  - `devices`
+  - `mount usb0`
+  - `ls`
+  - `open <file>`
+  - `cat <file>`
+  - `unmount`
+- Handles errors, like trying to open a file that does not exist
+- Supports multiple files loaded into the system
 
-This means the project already builds into a real bare-metal kernel image.
+The file content comes from external `.txt` files that I convert and load into the OS, so it is not just random hardcoded strings in the shell output.
 
-## Project Structure
+## How it works
 
-ByteForge/
-│
-├── boot/
-│   └── boot.S
-│
-├── kernel/
-│   ├── kernel.c
-│   ├── mailbox.c
-│   ├── mailbox.h
-│   ├── framebuffer.c
-│   └── framebuffer.h
-│
-├── build/
-├── linker.ld
-├── Makefile
-└── README.md
+The OS is built in layers:
 
-## How It Works
+boot -> framebuffer -> terminal -> input -> shell -> storage
 
-On boot, the Raspberry Pi firmware loads `kernel.img` from the SD card. ByteForge then takes control and runs its own startup code.
+- `boot` starts everything
+- `framebuffer` lets me draw to the screen
+- `terminal` handles text output and the cursor
+- `shell` processes commands
+- `storage` simulates a file system and external device workflow
 
-Boot flow:
+## Example flow
 
-Raspberry Pi firmware  
-→ ByteForge boot assembly  
-→ C kernel  
-→ mailbox request  
-→ framebuffer setup  
-→ basic graphics drawing  
+storage@byteforge > devices
+storage@byteforge > mount usb0
+storage@byteforge > ls
+storage@byteforge > open hello.txt
+storage@byteforge > cat resume.txt
+storage@byteforge > unmount
 
-## Build Requirements
+## Why I built this
 
-This project is built in WSL / Linux using the ARM bare-metal toolchain.
+I did not want to just make a normal shell or app that runs on top of an operating system.
 
-Required tools:
+I wanted to understand how things work underneath, starting from booting the machine all the way to interacting with files inside my own OS.
 
-- arm-none-eabi-gcc
-- make
+The long-term idea is to turn this into a small personal file server where you can plug in storage and access files directly.
 
-Install on Ubuntu / WSL with:
+## What is next
 
-sudo apt update
-sudo apt install gcc-arm-none-eabi make
+The current version is a working prototype.
 
-## Building
+Next steps would be things like:
+- real keyboard input
+- actual USB storage access instead of simulated files
+- eventually some way to move files in from another device
+
+## Build
 
 From the project root, run:
 
-make clean
 make
 
-This produces:
+Then copy the generated `kernel.img` to the Raspberry Pi boot partition and run it.
 
-build/kernel.img
+## Notes
 
-which is the kernel image intended to be loaded by the Raspberry Pi boot process.
-
-## Current Target Hardware
-
-- Raspberry Pi Zero
-- HDMI output
-- microSD boot media
-
-## Roadmap
-
-Planned next steps include:
-
-- booting ByteForge directly on hardware
-- rendering text to the screen
-- building a simple terminal-style interface
-- adding keyboard input
-- implementing basic file and storage commands
-- evolving ByteForge into a minimal personal file hub
-
-## Why This Project Exists
-
-ByteForge is being built as an Operating Systems final project, but the idea goes beyond the class itself. The aim is to create something technically challenging, practical, and portfolio-worthy while learning how operating systems actually work at a low level.
+This is still a work in progress, but the core system is stable and runs directly on real hardware.
 
 ## Author
 

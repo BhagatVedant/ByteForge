@@ -162,3 +162,60 @@ void storage_status(void) {
     terminal_set_color(0x00FFFFFF);
     terminal_write("Available files: 3\n");
 }
+
+void storage_info_file(const char *name) {
+    if (!storage_mounted) {
+        terminal_set_color(0x00FF6666);
+        terminal_write("No storage mounted.\n");
+        return;
+    }
+
+    for (int i = 0; i < file_count; i++) {
+        if (strings_equal(name, files[i].name)) {
+            terminal_set_color(0x00FFFFFF);
+
+            terminal_write("File: ");
+            terminal_write(files[i].name);
+            terminal_write("\n");
+
+            terminal_write("Type: ");
+            terminal_write(files[i].type);
+            terminal_write("\n");
+
+            terminal_write("Size: ");
+
+            int size = files[i].length;
+            char buffer[16];
+            int index = 0;
+
+            if (size == 0) {
+                buffer[index++] = '0';
+            } else {
+                char temp[16];
+                int t = 0;
+
+                while (size > 0) {
+                    temp[t++] = '0' + (size % 10);
+                    size /= 10;
+                }
+
+                while (t > 0) {
+                    buffer[index++] = temp[--t];
+                }
+            }
+
+            buffer[index] = '\0';
+
+            terminal_write(buffer);
+            terminal_write(" bytes\n");
+
+            return;
+        }
+    }
+
+    terminal_set_color(0x00FF6666);
+    terminal_write("File not found: ");
+    terminal_set_color(0x00FFFFFF);
+    terminal_write(name);
+    terminal_write("\n");
+}

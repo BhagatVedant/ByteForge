@@ -9,5 +9,6 @@ void storage_list_files(void);
 void storage_open_file(const char *file_name);
 void storage_cat_file(const char *file_name);
 void storage_status(void);
+void storage_info_file(const char *file_name);
 
 #endif

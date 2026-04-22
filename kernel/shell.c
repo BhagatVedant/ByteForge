@@ -29,7 +29,7 @@ static void skip_spaces(const char **str) {
 
 static void cmd_help(const char *args);
 static void cmd_about(const char *args);
-static void cmd_info(const char *args);
+static void cmd_sysinfo(const char *args);
 static void cmd_clear(const char *args);
 static void cmd_version(const char *args);
 static void cmd_echo(const char *args);
@@ -42,11 +42,12 @@ static void cmd_open(const char *args);
 static void cmd_status(const char *args);
 static void cmd_cat(const char *args);
 static void cmd_unmount(const char *args);
+static void cmd_info(const char *args);
 
 static shell_command_t commands[] = {
     {"help",    cmd_help,    "show available commands"},
     {"about",   cmd_about,   "about ByteForge"},
-    {"info",    cmd_info,    "show system info"},
+    {"sysinfo",    cmd_sysinfo,    "show system info"},
     {"status",  cmd_status,  "show storage status"},
     {"devices", cmd_devices, "list storage devices"},
     {"mount",   cmd_mount,   "mount a device"},
@@ -59,6 +60,7 @@ static shell_command_t commands[] = {
     {"credits", cmd_credits, "show credits"},
     {"cat",     cmd_cat,     "print a file in terminal"},
     {"unmount", cmd_unmount, "unmount current device"},
+    {"info", cmd_info,   "show file info"},
 };
 
 static const int command_count = sizeof(commands) / sizeof(commands[0]);
@@ -108,7 +110,7 @@ static void cmd_about(const char *args) {
     terminal_write("for Raspberry Pi Zero W, written in ARM assembly and C.\n");
 }
 
-static void cmd_info(const char *args) {
+static void cmd_sysinfo(const char *args) {
     (void)args;
     terminal_set_color(0x00FFFFFF);
     terminal_write("System: Raspberry Pi Zero W\n");
@@ -179,6 +181,10 @@ static void cmd_cat(const char *args) {
 static void cmd_unmount(const char *args) {
     (void)args;
     storage_unmount();
+}
+
+static void cmd_info(const char *args) {
+    storage_info_file(args);
 }
 
 void shell_execute(const char *command) {
