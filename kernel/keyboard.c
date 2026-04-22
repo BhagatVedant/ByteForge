@@ -1,5 +1,4 @@
 #include "keyboard.h"
-#include "input.h"
 
 #define KEYBOARD_QUEUE_SIZE 512
 
@@ -29,10 +28,20 @@ void keyboard_push_char(char c) {
     queue_tail = (queue_tail + 1) % KEYBOARD_QUEUE_SIZE;
 }
 
-void keyboard_poll(void) {
-    while (!queue_is_empty()) {
-        char c = keyboard_queue[queue_head];
-        queue_head = (queue_head + 1) % KEYBOARD_QUEUE_SIZE;
-        input_process_char(c);
+int keyboard_has_char(void) {
+    return !queue_is_empty();
+}
+
+char keyboard_get_char(void) {
+    if (queue_is_empty()) {
+        return 0;
     }
+
+    char c = keyboard_queue[queue_head];
+    queue_head = (queue_head + 1) % KEYBOARD_QUEUE_SIZE;
+    return c;
+}
+
+void keyboard_poll(void) {
+    // real USB keyboard logic goes here later
 }

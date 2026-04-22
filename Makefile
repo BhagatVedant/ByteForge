@@ -12,7 +12,8 @@ OBJ = $(BUILD_DIR)/boot.o \
       $(BUILD_DIR)/shell.o \
       $(BUILD_DIR)/input.o \
       $(BUILD_DIR)/keyboard.o \
-      $(BUILD_DIR)/storage.o
+      $(BUILD_DIR)/storage.o \
+      $(BUILD_DIR)/usb.o
 
 ELF = $(BUILD_DIR)/kernel.elf
 IMG = $(BUILD_DIR)/kernel.img
@@ -25,7 +26,7 @@ $(BUILD_DIR):
 $(BUILD_DIR)/boot.o: boot/boot.S | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/kernel.o: kernel/kernel.c kernel/framebuffer.h kernel/terminal.h kernel/shell.h kernel/input.h kernel/keyboard.h kernel/storage.h | $(BUILD_DIR)
+$(BUILD_DIR)/kernel.o: kernel/kernel.c kernel/framebuffer.h kernel/terminal.h kernel/shell.h kernel/input.h kernel/keyboard.h kernel/storage.h kernel/usb.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/mailbox.o: kernel/mailbox.c kernel/mailbox.h | $(BUILD_DIR)
@@ -47,6 +48,9 @@ $(BUILD_DIR)/keyboard.o: kernel/keyboard.c kernel/keyboard.h kernel/input.h | $(
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/storage.o: kernel/storage.c kernel/storage.h kernel/terminal.h kernel/hello_file.h kernel/notes_file.h | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/usb.o: kernel/usb.c kernel/usb.h kernel/terminal.h | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(ELF): $(OBJ)
