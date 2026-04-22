@@ -11,14 +11,15 @@ void kernel_main(void) {
         terminal_init();
         input_init();
         keyboard_init();
-        usb_init();
 
         terminal_set_color(0x00FFCC00);
-        terminal_write("ByteForge Keyboard Test\n");
+        terminal_write("ByteForge USB Keyboard Test\n\n");
 
         terminal_set_color(0x00FFFFFF);
-        terminal_write("Type something below:\n\n");
-        terminal_write("> ");
+        usb_init();
+        usb_enumerate();
+
+        terminal_write("\nType something below:\n\n> ");
         terminal_enable_cursor();
     }
 

@@ -2,5 +2,6 @@
 #define USB_H
 
 void usb_init(void);
+void usb_enumerate(void);
 
 #endif
