@@ -1,78 +1,61 @@
-# ByteForge OS
+# ByteForge USB Attempt (From Scratch)
 
-ByteForge is a bare-metal operating system I built from scratch for the Raspberry Pi Zero.
+This branch is me trying to get USB working from scratch on the Raspberry Pi Zero.
 
-The main idea behind it is to turn the Pi into a simple personal storage OS, kind of like a very early version of a DIY Google Drive.
+Goal was to:
+- get keyboard input directly into my OS
+- later use USB for storage (like real files instead of hardcoded ones)
 
-Right now it is still a prototype, but the core parts are already working.
+## What I got working
 
-## What it currently does
+- initialized USB controller (DWC2) in host mode
+- powered + reset the USB port
+- detected a device on the root port (in my case, the hub)
+- set up control transfer structures (EP0, setup packet, etc.)
+- tried both DMA and non-DMA (FIFO) paths
 
-- Boots directly on the Raspberry Pi with no Linux underneath
-- Sets up a framebuffer and displays text on screen
-- Has a custom terminal and shell
-- Has a basic storage system with commands like:
-  - `devices`
-  - `mount usb0`
-  - `ls`
-  - `open <file>`
-  - `cat <file>`
-  - `unmount`
-- Handles errors, like trying to open a file that does not exist
-- Supports multiple files loaded into the system
+## What didn’t work
 
-The file content comes from external `.txt` files that I convert and load into the OS, so it is not just random hardcoded strings in the shell output.
+- control transfers never actually executed
+- `HCINT0` always stayed 0
+- no descriptor data came back (all zeros)
+- couldn’t move past the first step of enumeration
 
-## How it works
+Basically:
+> the controller sees the device, but I can’t actually talk to it yet
 
-The OS is built in layers:
+## Important thing I learned
 
-boot -> framebuffer -> terminal -> input -> shell -> storage
+My setup was:
 
-- `boot` starts everything
-- `framebuffer` lets me draw to the screen
-- `terminal` handles text output and the cursor
-- `shell` processes commands
-- `storage` simulates a file system and external device workflow
+Pi → hub → keyboard
 
-## Example flow
+So the Pi was actually talking to the **hub**, not the keyboard.
 
-storage@byteforge > devices
-storage@byteforge > mount usb0
-storage@byteforge > ls
-storage@byteforge > open hello.txt
-storage@byteforge > cat resume.txt
-storage@byteforge > unmount
+To get the keyboard working from scratch I would need to:
+- fully enumerate the hub
+- power/reset hub ports
+- then enumerate the keyboard behind it
 
-## Why I built this
+Which is way more work than I expected.
 
-I did not want to just make a normal shell or app that runs on top of an operating system.
+## Why I’m stopping here (for now)
 
-I wanted to understand how things work underneath, starting from booting the machine all the way to interacting with files inside my own OS.
+I got far enough to understand how USB host + control transfers work at a low level.
 
-The long-term idea is to turn this into a small personal file server where you can plug in storage and access files directly.
+But finishing:
+- hub support
+- HID keyboard
+- storage
 
-## What is next
+would take a lot more time.
 
-The current version is a working prototype.
+So I’m switching to trying a library next to actually get input working.
 
-Next steps would be things like:
-- real keyboard input
-- actual USB storage access instead of simulated files
-- eventually some way to move files in from another device
+## Next step
 
-## Build
+New branch:
+- test USB using a library (USPi or similar)
+- goal is just to get keyboard input working first
 
-From the project root, run:
-
-make
-
-Then copy the generated `kernel.img` to the Raspberry Pi boot partition and run it.
-
-## Notes
-
-This is still a work in progress, but the core system is stable and runs directly on real hardware.
-
-## Author
-
-Vedant Bhagat
+I might come back to this later.
