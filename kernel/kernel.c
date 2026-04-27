@@ -4,6 +4,7 @@
 #include "input.h"
 #include "keyboard.h"
 #include "storage.h"
+#include "usb.h"
 
 void kernel_main(void) {
     volatile unsigned int blink_counter = 0;
@@ -15,6 +16,8 @@ void kernel_main(void) {
         keyboard_init();
         storage_init();
         shell_prompt();
+        usb_init();
+        usb_test_descriptor();
 
         keyboard_push_char('s');
         keyboard_push_char('t');
