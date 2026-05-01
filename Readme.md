@@ -24,6 +24,8 @@ The code still uses Pi firmware to load my kernel image. That is the only part n
 
 ## Setup
 
+(For the purposes for this final project, SDcard.zip has the Pi firmware with kernel.img shown in class demo for easier testing for the instructor which shall be submitted with the other files. Please refer to that for personal testing.)
+
 Clone the repo or unzip the project file.
 
 Do keep in mind! This project uses the ARM bare-metal cross compiler. To run the following commands you need to be on Linux or using wsl to simulate.
@@ -34,7 +36,7 @@ make clean
 make
 ```
 
-In the build directory made copy the following file and paste it in the Pi firmware. (For the purposes for this final project, SDcard.zip has the Pi firmware for easier testing for the instructor which shall be submitted with the other files. Please refer to that for personal testing.)
+In the build directory made copy the following file and paste it in the Pi firmware.
 
 ```bash
 build/kernel.img
