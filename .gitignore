@@ -16,10 +16,3 @@ kernel.img
 # Temp files
 *.log
 *.tmp
-*.swp
-*.swo
-*~
-
-# OS junk
-.DS_Store
-Thumbs.db

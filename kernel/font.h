@@ -1,3 +1,9 @@
+/*
+    File: font.h
+
+    This file contains a simple 8x8 bitmap font for ASCII characters.
+*/
+
 #ifndef FONT_H
 #define FONT_H
 

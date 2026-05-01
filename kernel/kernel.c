@@ -1,3 +1,15 @@
+/*
+    File: kernel.c
+
+    This is the main kernel entry point for the OS ByteForge.
+
+    The kernel initializes the framebuffer, terminal, shell, keyboard queue,
+    and storage system. Then it runs a scripted demo by simulating typed
+    commands through the keyboard queue.
+
+    The delays are there so the demo is readable during the class presentation.
+*/
+
 #include "framebuffer.h"
 #include "terminal.h"
 #include "shell.h"
@@ -5,8 +17,64 @@
 #include "keyboard.h"
 #include "storage.h"
 
+/*
+    Simple delay function to slow down the demo for readability.
+
+    The timer isn't real but rather it works on wasting CPU cycles to create a delay.
+*/
+static void delay(volatile unsigned int count) {
+    while (count--) {
+        asm volatile("nop");
+    }
+}
+
+// Startup delay to let the monitor load before the demo starts
+static void startup_delay(void) {
+    delay(8000000);
+}
+
+// Demo function for the cursor to blink while waiting
+static void demo_wait(unsigned int cycles) {
+    volatile unsigned int blink_counter = 0;
+
+    for (unsigned int i = 0; i < cycles; i++) {
+        blink_counter++;
+
+        if (blink_counter >= 50000) {
+            terminal_toggle_cursor();
+            blink_counter = 0;
+        }
+    }
+}
+
+/*
+    Typing one command into the OS like a keyboard would to replicate real human input.
+
+    Each character is pushed into the keyboard queue, then keyboard_poll()
+    sends it into the input system. This makes the demo look like someone
+    is typing commands live.
+*/
+static void demo_type_command(const char *command) {
+    while (*command) {
+        keyboard_push_char(*command);
+        keyboard_poll();
+
+        delay(120000);
+
+        command++;
+    }
+
+    keyboard_push_char('\n');
+    keyboard_poll();
+
+    demo_wait(2500000);
+}
+
+// Main OS entry point
 void kernel_main(void) {
     volatile unsigned int blink_counter = 0;
+
+    startup_delay();
 
     if (framebuffer_init()) {
         terminal_init();
@@ -14,156 +82,49 @@ void kernel_main(void) {
         input_init();
         keyboard_init();
         storage_init();
+
         shell_prompt();
 
-        keyboard_push_char('s');
-        keyboard_push_char('t');
-        keyboard_push_char('a');
-        keyboard_push_char('t');
-        keyboard_push_char('u');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
+        // Short delay before starting to type commands for the demo
+        demo_wait(2000000);
 
-        keyboard_push_char('d');
-        keyboard_push_char('e');
-        keyboard_push_char('v');
-        keyboard_push_char('i');
-        keyboard_push_char('c');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
+        /*
+            Demo flow.
 
-        keyboard_push_char('m');
-        keyboard_push_char('o');
-        keyboard_push_char('u');
-        keyboard_push_char('n');
-        keyboard_push_char('t');
-        keyboard_push_char(' ');
-        keyboard_push_char('u');
-        keyboard_push_char('s');
-        keyboard_push_char('b');
-        keyboard_push_char('0');
-        keyboard_push_char('\n');
+            This shows the full storage workflow:
+            status -> devices -> mount -> list -> metadata -> open/read
+            -> error handling -> unmount -> blocked access after unmount.
+        */
+        
+        demo_type_command("help");
+        demo_type_command("status");
+        demo_type_command("devices");
+        demo_type_command("mount usb0");
+        demo_type_command("ls");
+        demo_type_command("info hello.txt");
+        demo_type_command("open hello.txt");
+        demo_type_command("open notes.txt");
+        demo_type_command("cat resume.txt");
+        demo_type_command("open fake.txt");
+        demo_type_command("unmount");
+        demo_type_command("ls");
 
-        keyboard_push_char('l');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
+        terminal_set_color(0x00AAFFAA);
+        terminal_write("Demo complete.\n");
 
-        keyboard_push_char('i');
-        keyboard_push_char('n');
-        keyboard_push_char('f');
-        keyboard_push_char('o');
-        keyboard_push_char(' ');
-        keyboard_push_char('h');
-        keyboard_push_char('e');
-        keyboard_push_char('l');
-        keyboard_push_char('l');
-        keyboard_push_char('o');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('h');
-        keyboard_push_char('e');
-        keyboard_push_char('l');
-        keyboard_push_char('l');
-        keyboard_push_char('o');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('n');
-        keyboard_push_char('o');
-        keyboard_push_char('t');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('r');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('u');
-        keyboard_push_char('m');
-        keyboard_push_char('e');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('c');
-        keyboard_push_char('a');
-        keyboard_push_char('t');
-        keyboard_push_char(' ');
-        keyboard_push_char('r');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('u');
-        keyboard_push_char('m');
-        keyboard_push_char('e');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('f');
-        keyboard_push_char('a');
-        keyboard_push_char('k');
-        keyboard_push_char('e');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('u');
-        keyboard_push_char('n');
-        keyboard_push_char('m');
-        keyboard_push_char('o');
-        keyboard_push_char('u');
-        keyboard_push_char('n');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('l');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
+        terminal_set_color(0x00FFFFFF);
+        shell_prompt();
     }
 
-    while (1) {
+    // Keeping the OS alive and keep the cursor blinking
+    while (1)
+    {
         keyboard_poll();
 
         blink_counter++;
-        if (blink_counter >= 50000) {
+
+        if (blink_counter >= 50000)
+        {
             terminal_toggle_cursor();
             blink_counter = 0;
         }

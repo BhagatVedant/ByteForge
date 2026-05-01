@@ -1,77 +1,64 @@
-# ByteForge OS
+# ByteForge
 
-ByteForge is a bare-metal operating system I built from scratch for the Raspberry Pi Zero.
+ByteForge is a bare metal operating system for a Raspberry Pi Zero W V1.1.
 
-The main idea behind it is to turn the Pi into a simple personal storage OS, kind of like a very early version of a DIY Google Drive.
+The main idea is to build a base framework for turning the Raspberry into a server OS to be used as a personal Google Drive.
 
-Right now it is still a prototype, but the core parts are already working.
+Right now it is a base for this project to be build upon.
 
-## What it currently does
+The code still uses Pi firmware to load my kernel image. That is the only part not done from scratch.
 
-- Boots directly on the Raspberry Pi with no Linux underneath
-- Sets up a framebuffer and displays text on screen
-- Has a custom terminal and shell
-- Has a basic storage system with commands like:
-  - `devices`
-  - `mount usb0`
-  - `ls`
-  - `open <file>`
-  - `cat <file>`
-  - `unmount`
-- Handles errors, like trying to open a file that does not exist
-- Supports multiple files loaded into the system
+## What it can do right now
 
-The file content comes from external `.txt` files that I convert and load into the OS, so it is not just random hardcoded strings in the shell output.
+- Boots directly on the Raspberry Pi bare-metal without any Linux base.
+- Sets up a mailbox system to communicate between GPU and CPU.
+- Sets up a framebuffer to display text and shapes on a screen.
+- Has a custom terminal and shell with basic commands for the system.
+- Has a basic storage system with commands that can help do the following actions:
+    - File listing
+    - File opening
+    - Displaying File metadata
+    - mount and unmount USB (Right now only detects connection between microUSB)
+    - Error handling for missing files
+- Pipeline built for keyboard input until USB integration.
 
-## How it works
+## Setup
 
-The OS is built in layers:
+Clone the repo or unzip the project file.
 
-boot -> framebuffer -> terminal -> input -> shell -> storage
+Do keep in mind! This project uses the ARM bare-metal cross compiler. To run the following commands you need to be on Linux or using wsl to simulate.
 
-- `boot` starts everything
-- `framebuffer` lets me draw to the screen
-- `terminal` handles text output and the cursor
-- `shell` processes commands
-- `storage` simulates a file system and external device workflow
-
-## Example flow
-
-storage@byteforge > devices
-storage@byteforge > mount usb0
-storage@byteforge > ls
-storage@byteforge > open hello.txt
-storage@byteforge > cat resume.txt
-storage@byteforge > unmount
-
-## Why I built this
-
-I did not want to just make a normal shell or app that runs on top of an operating system.
-
-I wanted to understand how things work underneath, starting from booting the machine all the way to interacting with files inside my own OS.
-
-The long-term idea is to turn this into a small personal file server where you can plug in storage and access files directly.
-
-## What is next
-
-The current version is a working prototype.
-
-Next steps would be things like:
-- real keyboard input
-- actual USB storage access instead of simulated files
-- eventually some way to move files in from another device
-
-## Build
-
-From the project root, run:
-
+Once in a linux environment run the following command:
+```bash
+make clean
 make
+```
 
-Then copy the generated `kernel.img` to the Raspberry Pi boot partition and run it.
+In the build directory made copy the following file and paste it in the Pi firmware. (For the purposes for this final project, SDcard.zip has the Pi firmware for easier testing for the instructor which shall be submitted with the other files. Please refer to that for personal testing.)
 
-## Notes
+```bash
+build/kernel.img
+```
 
-This is still a work in progress, but the core system is stable and runs directly on real hardware.
+## Hardware Used
+
+- Raspberry Pi Zero W V1.1
+- microSD card
+- HDMI monitor
+- Laptop with WSL and VS Code
+- ARM cross compiler
+- USB Work and microSD reader
+
+## Other Things To Note
+
+For this project, I tried to add real USB support from scratch using DWC2 USB controller where I reached the following checkpoints:
+- USB port reset
+- Device detection
+- Speed detection
+
+I stopped at EP0 control transfer as it would send out a packet but the device would not respond back.
+
+This version is a working prototype. The main goal was to build the core parts of a small OS myself: boot, framebuffer output, terminal, shell, and a storage-style interface.
 
 ## Author
 

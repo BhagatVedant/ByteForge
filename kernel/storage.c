@@ -1,3 +1,12 @@
+/*
+    File: storage.c
+
+    This file creates a simple storage system.
+
+    The idea is that the files will be coming from a USB drive. Since USB support isn't implemented yet.
+    The files are just stored inside the kernel as byte arrays and usb0 is just a simulated device that can be mounted and unmounted.
+*/
+
 #include "storage.h"
 #include "terminal.h"
 #include "hello_file.h"
@@ -6,6 +15,7 @@
 
 static int storage_mounted = 0;
 
+//Struct to represent file with name, data, length and type.
 typedef struct {
     const char *name;
     const unsigned char *data;
@@ -13,6 +23,7 @@ typedef struct {
     const char *type;
 } file_entry_t;
 
+// Simulated files stored in usb0
 static file_entry_t files[] = {
     {"hello.txt",  hello_txt,  sizeof(hello_txt),  "text"},
     {"notes.txt",  notes_txt,  sizeof(notes_txt),  "text"},
@@ -21,6 +32,7 @@ static file_entry_t files[] = {
 
 static const int file_count = sizeof(files) / sizeof(files[0]);
 
+//Since OS doesn't use the standard library we implement our own string comparison.
 static int strings_equal(const char *a, const char *b) {
     while (*a && *b) {
         if (*a != *b) {
@@ -32,17 +44,21 @@ static int strings_equal(const char *a, const char *b) {
     return *a == *b;
 }
 
+//Start with no storage
 void storage_init(void) {
     storage_mounted = 0;
 }
 
+//Show simulated storage devices
 void storage_devices(void) {
     terminal_set_color(0x00FFFFFF);
     terminal_write("Detected devices:\n");
     terminal_write("usb0 - external storage device\n");
 }
 
+
 void storage_mount(const char *device) {
+    //Only usb0 is supported in this simulationn so we check if the user is trying to mount it. If not, we show an error message
     if (!strings_equal(device, "usb0")) {
         terminal_set_color(0x00FF6666);
         terminal_write("Device not found: ");
@@ -63,6 +79,7 @@ void storage_mount(const char *device) {
     terminal_write("Mounted usb0 successfully.\n");
 }
 
+//Unmount the storage and reset state
 void storage_unmount(void) {
     if (!storage_mounted) {
         terminal_set_color(0x00FF6666);
@@ -75,6 +92,7 @@ void storage_unmount(void) {
     terminal_write("Unmounted usb0 successfully.\n");
 }
 
+//List the files on the mounted storage device.
 void storage_list_files(void) {
     if (!storage_mounted) {
         terminal_set_color(0x00FF6666);
@@ -93,6 +111,7 @@ void storage_list_files(void) {
     }
 }
 
+//Open a file and display its contents.
 void storage_open_file(const char *name) {
     if (!storage_mounted) {
         terminal_set_color(0x00FF6666);
@@ -122,6 +141,7 @@ void storage_open_file(const char *name) {
     terminal_write("\n");
 }
 
+//Display the contents of a file without the opening message.
 void storage_cat_file(const char *name) {
     if (!storage_mounted) {
         terminal_set_color(0x00FF6666);
@@ -147,6 +167,7 @@ void storage_cat_file(const char *name) {
     terminal_write("\n");
 }
 
+//Show storage device status and file information
 void storage_status(void) {
     terminal_set_color(0x00FFFFFF);
     terminal_write("Storage service: active\n");
@@ -163,6 +184,7 @@ void storage_status(void) {
     terminal_write("Available files: 3\n");
 }
 
+//Show metadata for a file
 void storage_info_file(const char *name) {
     if (!storage_mounted) {
         terminal_set_color(0x00FF6666);

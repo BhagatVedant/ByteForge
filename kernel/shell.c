@@ -1,15 +1,26 @@
+/*
+    File: shell.c
+
+    This file builds a simple command-line shell.
+
+    The shell takes in full command string from the input system then checks the command with its list and responds accordingly.
+    All commands are connected here from the rest of the OS files for easier management.
+*/
+
 #include "shell.h"
 #include "terminal.h"
 #include "storage.h"
 
 typedef void (*command_handler_t)(const char *args);
 
+//Struct to represent a command with its name, handler function and description
 typedef struct {
     const char *name;
     command_handler_t handler;
     const char *description;
 } shell_command_t;
 
+//Comparison function since OS is not using the standard library
 static int strings_equal(const char *a, const char *b) {
     while (*a && *b) {
         if (*a != *b) {
@@ -21,6 +32,7 @@ static int strings_equal(const char *a, const char *b) {
     return *a == *b;
 }
 
+//Trim leading spaces from a string
 static void skip_spaces(const char **str) {
     while (**str == ' ') {
         (*str)++;
@@ -44,6 +56,13 @@ static void cmd_cat(const char *args);
 static void cmd_unmount(const char *args);
 static void cmd_info(const char *args);
 
+/*
+    Main Command List
+
+    To add new commands:
+    1. Write a function handler
+    2. Add it to the table
+*/
 static shell_command_t commands[] = {
     {"help",    cmd_help,    "show available commands"},
     {"about",   cmd_about,   "about ByteForge"},
