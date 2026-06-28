@@ -2,9 +2,9 @@
 #define INPUT_H
 
 void input_init(void);
-void input_add_char(char c);
-void input_backspace(void);
-void input_submit(void);
-void input_process_char(char c);
+int input_has_char(void);
+char input_get_char(void);
+
+void input_push_char(char c);
 
 #endif

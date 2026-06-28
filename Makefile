@@ -14,8 +14,9 @@ OBJS = \
 	$(BUILD_DIR)/terminal.o \
 	$(BUILD_DIR)/shell.o \
 	$(BUILD_DIR)/input.o \
-	$(BUILD_DIR)/keyboard.o \
-	$(BUILD_DIR)/storage.o
+	$(BUILD_DIR)/storage.o \
+	$(BUILD_DIR)/usb.o \
+	$(BUILD_DIR)/hid_keyboard.o
 
 all: $(BUILD_DIR)/kernel8.img
 

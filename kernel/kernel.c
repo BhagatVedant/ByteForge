@@ -2,48 +2,35 @@
 #include "terminal.h"
 #include "shell.h"
 #include "input.h"
-#include "keyboard.h"
 #include "storage.h"
-
-static void run_boot_demo(void) {
-    const char *demo =
-        "status\n"
-        "devices\n"
-        "mount usb0\n"
-        "ls\n"
-        "info hello.txt\n"
-        "open hello.txt\n"
-        "open notes.txt\n"
-        "open resume.txt\n"
-        "cat resume.txt\n"
-        "open fake.txt\n"
-        "unmount\n"
-        "ls\n";
-
-    while (*demo) {
-        keyboard_push_char(*demo);
-        demo++;
-    }
-}
+#include "usb.h"
+#include "hid_keyboard.h"
 
 void kernel_main(void) {
     volatile unsigned int blink_counter = 0;
 
-    if (framebuffer_init()) {
-        terminal_init();
-        shell_init();
-        input_init();
-        keyboard_init();
-        storage_init();
-        shell_prompt();
-
-        // This is still fake keyboard input. Real USB keyboard support is a
-        // separate driver, not just a Pi 5 port change.
-        run_boot_demo();
+    if (!framebuffer_init()) {
+        while (1) {
+            // Framebuffer failed, nothing useful to draw yet.
+        }
     }
 
+    terminal_init();
+
+    input_init();
+    storage_init();
+    shell_init();
+
+    hid_keyboard_init();
+    usb_init();
+
+    terminal_set_color(0x00E6E6E6);
+    terminal_write("\n");
+    shell_prompt();
+
     while (1) {
-        keyboard_poll();
+        usb_poll();
+        shell_update();
 
         blink_counter++;
         if (blink_counter >= 50000) {

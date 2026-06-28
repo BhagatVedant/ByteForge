@@ -8,14 +8,19 @@ static uint32_t terminal_color = 0x00E6E6E6;
 static int cursor_enabled = 0;
 static int cursor_visible = 0;
 
-#define TERM_START_X  48
-#define TERM_START_Y  48
-#define CHAR_WIDTH    8
-#define CHAR_HEIGHT   8
-#define LINE_SPACING  12
+#define FONT_SCALE    2
+#define CHAR_WIDTH    (8 * FONT_SCALE)
+#define CHAR_HEIGHT   (8 * FONT_SCALE)
+#define LINE_SPACING  22
+
+#define TERM_START_X  64
+#define TERM_START_Y  64
 
 #define BG_COLOR      0x00000000
+#define TEXT_COLOR    0x00E6E6E6
+#define DIM_COLOR     0x00666666
 #define ACCENT_COLOR  0x0000FFAA
+#define ERROR_COLOR   0x00FF5555
 
 static uint32_t screen_width(void) {
     return framebuffer_get_width();
@@ -38,18 +43,25 @@ static void clear_char_cell(int x, int y) {
     draw_rect(x, y, CHAR_WIDTH, CHAR_HEIGHT, BG_COLOR);
 }
 
+static void draw_boot_header(void) {
+    terminal_set_color(ACCENT_COLOR);
+    terminal_write("ByteForge OS v0.1\n");
+
+    terminal_set_color(DIM_COLOR);
+    terminal_write("--------------------------------\n");
+
+    terminal_set_color(TEXT_COLOR);
+}
+
 void terminal_init(void) {
     cursor_x = TERM_START_X;
     cursor_y = TERM_START_Y;
-    terminal_color = 0x00E6E6E6;
+    terminal_color = TEXT_COLOR;
     cursor_enabled = 0;
     cursor_visible = 0;
 
     terminal_clear(BG_COLOR);
-
-    terminal_set_color(ACCENT_COLOR);
-    terminal_write("ByteForge OS v0.1\n");
-    terminal_set_color(0x00E6E6E6);
+    draw_boot_header();
 }
 
 void terminal_clear(uint32_t color) {
@@ -74,7 +86,7 @@ void terminal_write_char(char c) {
         return;
     }
 
-    draw_char(cursor_x, cursor_y, c, terminal_color);
+    draw_char_scaled(cursor_x, cursor_y, c, terminal_color, FONT_SCALE);
     cursor_x += CHAR_WIDTH;
 
     if ((uint32_t)(cursor_x + CHAR_WIDTH + TERM_START_X) >= screen_width()) {
@@ -94,7 +106,7 @@ void terminal_draw_cursor(void) {
         return;
     }
 
-    draw_char(cursor_x, cursor_y, '_', terminal_color);
+    draw_char_scaled(cursor_x, cursor_y, '_', terminal_color, FONT_SCALE);
     cursor_visible = 1;
 }
 

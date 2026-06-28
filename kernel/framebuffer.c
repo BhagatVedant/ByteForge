@@ -18,15 +18,15 @@ int framebuffer_init(void) {
     mailbox[2]  = 0x00048003;
     mailbox[3]  = 8;
     mailbox[4]  = 8;
-    mailbox[5]  = 1024;
-    mailbox[6]  = 768;
+    mailbox[5]  = 1280;
+    mailbox[6]  = 720;
 
     // Virtual width/height
     mailbox[7]  = 0x00048004;
     mailbox[8]  = 8;
     mailbox[9]  = 8;
-    mailbox[10] = 1024;
-    mailbox[11] = 768;
+    mailbox[10] = 1280;
+    mailbox[11] = 720;
 
     // Virtual offset
     mailbox[12] = 0x00048009;
@@ -111,6 +111,24 @@ void draw_char(int x, int y, char c, uint32_t color) {
         for (int col = 0; col < 8; col++) {
             if (glyph[row] & (1 << (7 - col))) {
                 draw_pixel(x + col, y + row, color);
+            }
+        }
+    }
+}
+
+void draw_char_scaled(int x, int y, char c, uint32_t color, int scale) {
+    const uint8_t *glyph = font[(unsigned char)c];
+
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            if (glyph[row] & (1 << (7 - col))) {
+                draw_rect(
+                    x + col * scale,
+                    y + row * scale,
+                    scale,
+                    scale,
+                    color
+                );
             }
         }
     }

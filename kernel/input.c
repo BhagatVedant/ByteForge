@@ -1,64 +1,42 @@
 #include "input.h"
-#include "terminal.h"
-#include "shell.h"
 
 #define INPUT_BUFFER_SIZE 128
 
 static char input_buffer[INPUT_BUFFER_SIZE];
-static int input_length = 0;
+static int input_read_index = 0;
+static int input_write_index = 0;
+
+static int next_index(int index) {
+    return (index + 1) % INPUT_BUFFER_SIZE;
+}
 
 void input_init(void) {
-    input_length = 0;
-    input_buffer[0] = '\0';
+    input_read_index = 0;
+    input_write_index = 0;
 }
 
-void input_add_char(char c) {
-    if (input_length >= INPUT_BUFFER_SIZE - 1) {
+void input_push_char(char c) {
+    int next = next_index(input_write_index);
+
+    if (next == input_read_index) {
         return;
     }
 
-    terminal_erase_cursor();
-
-    input_buffer[input_length] = c;
-    input_length++;
-    input_buffer[input_length] = '\0';
-
-    terminal_write_char(c);
-    terminal_draw_cursor();
+    input_buffer[input_write_index] = c;
+    input_write_index = next;
 }
 
-void input_backspace(void) {
-    if (input_length <= 0) {
-        return;
-    }
-
-    terminal_erase_cursor();
-
-    input_length--;
-    input_buffer[input_length] = '\0';
-
-    terminal_backspace();
-    terminal_draw_cursor();
+int input_has_char(void) {
+    return input_read_index != input_write_index;
 }
 
-void input_submit(void) {
-    terminal_erase_cursor();
-    terminal_write("\n");
-
-    shell_execute(input_buffer);
-
-    input_length = 0;
-    input_buffer[0] = '\0';
-}
-
-void input_process_char(char c) {
-    if (c == '\n' || c == '\r') {
-        input_submit();
+char input_get_char(void) {
+    if (!input_has_char()) {
+        return 0;
     }
-    else if (c == '\b') {
-        input_backspace();
-    }
-    else {
-        input_add_char(c);
-    }
+
+    char c = input_buffer[input_read_index];
+    input_read_index = next_index(input_read_index);
+
+    return c;
 }
