@@ -5,6 +5,27 @@
 #include "keyboard.h"
 #include "storage.h"
 
+static void run_boot_demo(void) {
+    const char *demo =
+        "status\n"
+        "devices\n"
+        "mount usb0\n"
+        "ls\n"
+        "info hello.txt\n"
+        "open hello.txt\n"
+        "open notes.txt\n"
+        "open resume.txt\n"
+        "cat resume.txt\n"
+        "open fake.txt\n"
+        "unmount\n"
+        "ls\n";
+
+    while (*demo) {
+        keyboard_push_char(*demo);
+        demo++;
+    }
+}
+
 void kernel_main(void) {
     volatile unsigned int blink_counter = 0;
 
@@ -16,147 +37,9 @@ void kernel_main(void) {
         storage_init();
         shell_prompt();
 
-        keyboard_push_char('s');
-        keyboard_push_char('t');
-        keyboard_push_char('a');
-        keyboard_push_char('t');
-        keyboard_push_char('u');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('d');
-        keyboard_push_char('e');
-        keyboard_push_char('v');
-        keyboard_push_char('i');
-        keyboard_push_char('c');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('m');
-        keyboard_push_char('o');
-        keyboard_push_char('u');
-        keyboard_push_char('n');
-        keyboard_push_char('t');
-        keyboard_push_char(' ');
-        keyboard_push_char('u');
-        keyboard_push_char('s');
-        keyboard_push_char('b');
-        keyboard_push_char('0');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('l');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('i');
-        keyboard_push_char('n');
-        keyboard_push_char('f');
-        keyboard_push_char('o');
-        keyboard_push_char(' ');
-        keyboard_push_char('h');
-        keyboard_push_char('e');
-        keyboard_push_char('l');
-        keyboard_push_char('l');
-        keyboard_push_char('o');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('h');
-        keyboard_push_char('e');
-        keyboard_push_char('l');
-        keyboard_push_char('l');
-        keyboard_push_char('o');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('n');
-        keyboard_push_char('o');
-        keyboard_push_char('t');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('r');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('u');
-        keyboard_push_char('m');
-        keyboard_push_char('e');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('c');
-        keyboard_push_char('a');
-        keyboard_push_char('t');
-        keyboard_push_char(' ');
-        keyboard_push_char('r');
-        keyboard_push_char('e');
-        keyboard_push_char('s');
-        keyboard_push_char('u');
-        keyboard_push_char('m');
-        keyboard_push_char('e');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('o');
-        keyboard_push_char('p');
-        keyboard_push_char('e');
-        keyboard_push_char('n');
-        keyboard_push_char(' ');
-        keyboard_push_char('f');
-        keyboard_push_char('a');
-        keyboard_push_char('k');
-        keyboard_push_char('e');
-        keyboard_push_char('.');
-        keyboard_push_char('t');
-        keyboard_push_char('x');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('u');
-        keyboard_push_char('n');
-        keyboard_push_char('m');
-        keyboard_push_char('o');
-        keyboard_push_char('u');
-        keyboard_push_char('n');
-        keyboard_push_char('t');
-        keyboard_push_char('\n');
-
-        keyboard_push_char('l');
-        keyboard_push_char('s');
-        keyboard_push_char('\n');
+        // This is still fake keyboard input. Real USB keyboard support is a
+        // separate driver, not just a Pi 5 port change.
+        run_boot_demo();
     }
 
     while (1) {

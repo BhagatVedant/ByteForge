@@ -1,59 +1,38 @@
-CC = arm-none-eabi-gcc
-CFLAGS = -mcpu=arm1176jzf-s -ffreestanding -nostdlib -nostartfiles -Wall -Wextra
-LDFLAGS = -T linker.ld -nostdlib
+CC = aarch64-linux-gnu-gcc
+OBJCOPY = aarch64-linux-gnu-objcopy
+
+CFLAGS = -Wall -O2 -ffreestanding -nostdlib -nostartfiles -mgeneral-regs-only -Ikernel
+LDFLAGS = -T linker.ld -ffreestanding -nostdlib -nostartfiles
 
 BUILD_DIR = build
 
-OBJ = $(BUILD_DIR)/boot.o \
-      $(BUILD_DIR)/kernel.o \
-      $(BUILD_DIR)/mailbox.o \
-      $(BUILD_DIR)/framebuffer.o \
-      $(BUILD_DIR)/terminal.o \
-      $(BUILD_DIR)/shell.o \
-      $(BUILD_DIR)/input.o \
-      $(BUILD_DIR)/keyboard.o \
-      $(BUILD_DIR)/storage.o
+OBJS = \
+	$(BUILD_DIR)/boot.o \
+	$(BUILD_DIR)/kernel.o \
+	$(BUILD_DIR)/framebuffer.o \
+	$(BUILD_DIR)/mailbox.o \
+	$(BUILD_DIR)/terminal.o \
+	$(BUILD_DIR)/shell.o \
+	$(BUILD_DIR)/input.o \
+	$(BUILD_DIR)/keyboard.o \
+	$(BUILD_DIR)/storage.o
 
-ELF = $(BUILD_DIR)/kernel.elf
-IMG = $(BUILD_DIR)/kernel.img
-
-all: $(IMG)
+all: $(BUILD_DIR)/kernel8.img
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 $(BUILD_DIR)/boot.o: boot/boot.S | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c boot/boot.S -o $(BUILD_DIR)/boot.o
+
+$(BUILD_DIR)/%.o: kernel/%.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/kernel.o: kernel/kernel.c kernel/framebuffer.h kernel/terminal.h kernel/shell.h kernel/input.h kernel/keyboard.h kernel/storage.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(BUILD_DIR)/kernel.elf: $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -o $(BUILD_DIR)/kernel.elf
 
-$(BUILD_DIR)/mailbox.o: kernel/mailbox.c kernel/mailbox.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/framebuffer.o: kernel/framebuffer.c kernel/framebuffer.h kernel/mailbox.h kernel/font.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/terminal.o: kernel/terminal.c kernel/terminal.h kernel/framebuffer.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/shell.o: kernel/shell.c kernel/shell.h kernel/terminal.h kernel/storage.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/input.o: kernel/input.c kernel/input.h kernel/terminal.h kernel/shell.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/keyboard.o: kernel/keyboard.c kernel/keyboard.h kernel/input.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/storage.o: kernel/storage.c kernel/storage.h kernel/terminal.h kernel/hello_file.h kernel/notes_file.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(ELF): $(OBJ)
-	$(CC) $(LDFLAGS) $(OBJ) -o $(ELF)
-
-$(IMG): $(ELF)
-	arm-none-eabi-objcopy $(ELF) -O binary $(IMG)
+$(BUILD_DIR)/kernel8.img: $(BUILD_DIR)/kernel.elf
+	$(OBJCOPY) $(BUILD_DIR)/kernel.elf -O binary $(BUILD_DIR)/kernel8.img
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -f $(BUILD_DIR)/*.o $(BUILD_DIR)/*.elf $(BUILD_DIR)/*.img kernel.elf kernel.img kernel8.img

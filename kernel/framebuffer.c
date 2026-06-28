@@ -14,35 +14,41 @@ int framebuffer_init(void) {
     mailbox[0] = 35 * 4;
     mailbox[1] = 0;
 
+    // Physical width/height
     mailbox[2]  = 0x00048003;
     mailbox[3]  = 8;
     mailbox[4]  = 8;
     mailbox[5]  = 1024;
     mailbox[6]  = 768;
 
+    // Virtual width/height
     mailbox[7]  = 0x00048004;
     mailbox[8]  = 8;
     mailbox[9]  = 8;
     mailbox[10] = 1024;
     mailbox[11] = 768;
 
+    // Virtual offset
     mailbox[12] = 0x00048009;
     mailbox[13] = 8;
     mailbox[14] = 8;
     mailbox[15] = 0;
     mailbox[16] = 0;
 
+    // Depth
     mailbox[17] = 0x00048005;
     mailbox[18] = 4;
     mailbox[19] = 4;
     mailbox[20] = 32;
 
+    // Allocate framebuffer
     mailbox[21] = 0x00040001;
     mailbox[22] = 8;
     mailbox[23] = 8;
     mailbox[24] = 16;
     mailbox[25] = 0;
 
+    // Get pitch
     mailbox[26] = 0x00040008;
     mailbox[27] = 4;
     mailbox[28] = 4;
@@ -54,16 +60,31 @@ int framebuffer_init(void) {
     mailbox[33] = 0;
     mailbox[34] = 0;
 
-    if (!mailbox_call(8)) {
+    if (!mailbox_call(MBOX_CHANNEL_PROPERTY)) {
         return 0;
     }
 
     width = mailbox[5];
     height = mailbox[6];
     pitch = mailbox[29];
+
+    // Firmware returns a bus-style framebuffer address. For this simple low-memory
+    // setup, masking like the old code still works for the framebuffer pointer.
     framebuffer = (uint8_t*)((uintptr_t)(mailbox[24] & 0x3FFFFFFF));
 
-    return framebuffer != 0;
+    return framebuffer != 0 && pitch != 0;
+}
+
+uint32_t framebuffer_get_width(void) {
+    return width;
+}
+
+uint32_t framebuffer_get_height(void) {
+    return height;
+}
+
+uint32_t framebuffer_get_pitch(void) {
+    return pitch;
 }
 
 void draw_pixel(int x, int y, uint32_t color) {

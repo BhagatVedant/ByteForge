@@ -107,13 +107,13 @@ static void cmd_about(const char *args) {
     (void)args;
     terminal_set_color(0x00FFFFFF);
     terminal_write("ByteForge is a bare-metal storage-oriented OS project\n");
-    terminal_write("for Raspberry Pi Zero W, written in ARM assembly and C.\n");
+    terminal_write("for Raspberry Pi 5, written in AArch64 assembly and C.\n");
 }
 
 static void cmd_sysinfo(const char *args) {
     (void)args;
     terminal_set_color(0x00FFFFFF);
-    terminal_write("System: Raspberry Pi Zero W\n");
+    terminal_write("System: Raspberry Pi 5\n");
     terminal_write("Display: Framebuffer active\n");
     terminal_write("Shell: Online\n");
     terminal_write("Storage mode: Prototype\n");
@@ -171,7 +171,7 @@ static void cmd_credits(const char *args) {
     (void)args;
     terminal_set_color(0x00FFFFFF);
     terminal_write("ByteForge by Vedant Bhagat\n");
-    terminal_write("Built on Raspberry Pi Zero W\n");
+    terminal_write("Built on Raspberry Pi 5\n");
 }
 
 static void cmd_cat(const char *args) {
