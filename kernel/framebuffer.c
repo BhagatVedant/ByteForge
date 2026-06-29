@@ -18,15 +18,15 @@ int framebuffer_init(void) {
     mailbox[2]  = 0x00048003;
     mailbox[3]  = 8;
     mailbox[4]  = 8;
-    mailbox[5]  = 1280;
-    mailbox[6]  = 720;
+    mailbox[5]  = 1920;
+    mailbox[6]  = 1080;
 
     // Virtual width/height
     mailbox[7]  = 0x00048004;
     mailbox[8]  = 8;
     mailbox[9]  = 8;
-    mailbox[10] = 1280;
-    mailbox[11] = 720;
+    mailbox[10] = 1920;
+    mailbox[11] = 1080;
 
     // Virtual offset
     mailbox[12] = 0x00048009;

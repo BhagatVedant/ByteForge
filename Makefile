@@ -15,6 +15,7 @@ OBJS = \
 	$(BUILD_DIR)/shell.o \
 	$(BUILD_DIR)/input.o \
 	$(BUILD_DIR)/storage.o \
+	$(BUILD_DIR)/pcie.o \
 	$(BUILD_DIR)/usb.o \
 	$(BUILD_DIR)/hid_keyboard.o
 

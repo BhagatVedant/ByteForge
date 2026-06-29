@@ -3,8 +3,9 @@
 #include "shell.h"
 #include "input.h"
 #include "storage.h"
-#include "usb.h"
 #include "hid_keyboard.h"
+#include "pcie.h"
+// #include "usb.h"
 
 void kernel_main(void) {
     volatile unsigned int blink_counter = 0;
@@ -22,14 +23,20 @@ void kernel_main(void) {
     shell_init();
 
     hid_keyboard_init();
-    usb_init();
+
+    /*
+        New research-based test:
+        Scan PCIe config, find RP1, read BAR1,
+        then probe RP1 sysinfo + USB0/USB1 DWC3 blocks.
+    */
+    rp1_probe_minimal();
 
     terminal_set_color(0x00E6E6E6);
     terminal_write("\n");
     shell_prompt();
 
     while (1) {
-        usb_poll();
+        // usb_poll(); // keep disabled until RP1 BAR/DWC3 probe works
         shell_update();
 
         blink_counter++;

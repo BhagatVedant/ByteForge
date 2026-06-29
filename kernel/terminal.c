@@ -8,13 +8,13 @@ static uint32_t terminal_color = 0x00E6E6E6;
 static int cursor_enabled = 0;
 static int cursor_visible = 0;
 
-#define FONT_SCALE    2
+#define FONT_SCALE    1
 #define CHAR_WIDTH    (8 * FONT_SCALE)
 #define CHAR_HEIGHT   (8 * FONT_SCALE)
-#define LINE_SPACING  22
+#define LINE_SPACING  12
 
-#define TERM_START_X  64
-#define TERM_START_Y  64
+#define TERM_START_X  48
+#define TERM_START_Y  48
 
 #define BG_COLOR      0x00000000
 #define TEXT_COLOR    0x00E6E6E6
