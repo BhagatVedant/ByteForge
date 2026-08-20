@@ -7,8 +7,8 @@ build/
 # ELF files
 *.elf
 
-# Generated kernel image
-kernel.img
+# Generated kernel images
+*.img
 
 # VSCode
 .vscode/

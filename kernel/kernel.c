@@ -9,7 +9,7 @@ static void run_boot_demo(void) {
     const char *demo =
         "status\n"
         "devices\n"
-        "mount usb0\n"
+        "mount demo0\n"
         "ls\n"
         "info hello.txt\n"
         "open hello.txt\n"
@@ -37,8 +37,8 @@ void kernel_main(void) {
         storage_init();
         shell_prompt();
 
-        // This is still fake keyboard input. Real USB keyboard support is a
-        // separate driver, not just a Pi 5 port change.
+        // Feed a deterministic boot demonstration through the input queue.
+        // Physical keyboard support belongs to the separate USB experiment.
         run_boot_demo();
     }
 

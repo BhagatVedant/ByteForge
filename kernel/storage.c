@@ -39,11 +39,11 @@ void storage_init(void) {
 void storage_devices(void) {
     terminal_set_color(0x00FFFFFF);
     terminal_write("Detected devices:\n");
-    terminal_write("usb0 - external storage device\n");
+    terminal_write("demo0 - in-memory demonstration storage\n");
 }
 
 void storage_mount(const char *device) {
-    if (!strings_equal(device, "usb0")) {
+    if (!strings_equal(device, "demo0")) {
         terminal_set_color(0x00FF6666);
         terminal_write("Device not found: ");
         terminal_set_color(0x00FFFFFF);
@@ -54,13 +54,13 @@ void storage_mount(const char *device) {
 
     if (storage_mounted) {
         terminal_set_color(0x00FFCC00);
-        terminal_write("usb0 is already mounted.\n");
+        terminal_write("demo0 is already mounted.\n");
         return;
     }
 
     storage_mounted = 1;
     terminal_set_color(0x00AAFFAA);
-    terminal_write("Mounted usb0 successfully.\n");
+    terminal_write("Mounted demo0 (in-memory) successfully.\n");
 }
 
 void storage_unmount(void) {
@@ -72,7 +72,7 @@ void storage_unmount(void) {
 
     storage_mounted = 0;
     terminal_set_color(0x00AAFFAA);
-    terminal_write("Unmounted usb0 successfully.\n");
+    terminal_write("Unmounted demo0 successfully.\n");
 }
 
 void storage_list_files(void) {
@@ -153,7 +153,7 @@ void storage_status(void) {
 
     if (storage_mounted) {
         terminal_set_color(0x00AAFFAA);
-        terminal_write("Mounted device: usb0\n");
+        terminal_write("Mounted demo device: demo0 (in-memory)\n");
     } else {
         terminal_set_color(0x00FF6666);
         terminal_write("Mounted device: none\n");
